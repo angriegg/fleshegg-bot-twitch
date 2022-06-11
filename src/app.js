@@ -1,6 +1,9 @@
 import tmi from 'tmi.js'
 import { BOT_USERNAME , OAUTH_TOKEN, CHANNEL_NAME, BLOCKED_WORDS } from './constants'
 
+var active = true
+var active_2 = true
+
 const options = {
 	options: { debug: true },
 	connection: {
@@ -73,7 +76,8 @@ client.on('message', (channel, userstate, message, self) => {
     return
   }
 
-  if (userstate.username === BOT_USERNAME) {
+  if (userstate.username === BOT_USERNAME || userstate.username === "nightbot" 
+  || userstate.username === "streamelements" || userstate.username === "songlistbot") {
     console.log(`Not checking bot's messages.`)
     return
   }
@@ -82,6 +86,76 @@ client.on('message', (channel, userstate, message, self) => {
     hello(channel, userstate)
     return
   }
+
+  if(message.toLowerCase() === "!fleshegg") {
+
+    client.say(channel, "you called? my commands are !hello !socials !discord !models !lurk !nini !flesh");
+  }
+
+
+  if(message.toLowerCase() === "!socials") {
+
+      client.say(channel, "https://angriegg.carrd.co");
+  }
+
+      
+  if(message.toLowerCase() === "!discord") {
+
+      client.say(channel, "come chill in the fridge https://discord.gg/JRJ94UVZvA");
+  }
+
+  if(message.toLowerCase() === "!models") {
+
+      client.say(channel, "pick eggus model from these! https://imgur.com/a/kiPHnIX");
+  }
+
+  if(message.toLowerCase() === "!lurk") {
+
+      client.say(channel, "ty for lurky wurkies");
+  }
+      
+  if(message.toLowerCase() === "!nini") {
+      client.say(channel, "nini dont let the flesheggs bite!");
+  }
+     
+  if(message.toLowerCase() === "!raided") {
+      client.say(channel, `thank you @${userstate.username} for the raid of 10302132!!`)
+      client.say(channel, `!so ${userstate.username}`);
+  }
+
+  if(message.toLowerCase() === "!flesh") {
+
+      client.say(channel, "im always watching");
+  }
+  
+  if(message.toLowerCase() === "!comms" || message.toLowerCase() === "!comm") {
+
+      client.say(channel, "fill eggus fridge by commissioning her -> https://angriegg.com")
+
+  }
+  
+  
+  else{
+    if(message.toLowerCase().startsWith("@") === false && message.toLowerCase().includes("ex") === true) {
+        if (active) {
+            client.say(channel, `don't you mean ${message.toLowerCase().replace(/ex/g, "EGGS")}? Kappa`)
+            active = false
+            setTimeout(() => {
+                active = true
+            }, 5000)
+        }
+    }
+    
+    if(message.toLowerCase().includes("eggs") === true) {
+        if (active_2) {
+            client.say(channel, ":egg: :egg: :egg:")
+            active_2 = false
+            setTimeout(() => {
+                active_2 = true
+            }, 5000)
+        }
+    }
+}
 
   onMessageHandler(channel, userstate, message, self)
 })
@@ -100,31 +174,33 @@ function onConnectedHandler(address, port) {
 
 function onHostedHandler (channel, username, viewers, autohost) {
   client.say(channel,
-    `Thank you @${username} for the host of ${viewers}!`
+    `thank you @${username} for the host of ${viewers}!!!`
   )
 }
 
-function onRaidedHandler(channel, username, viewers) {
+function onRaidedHandler(channel, username, viewers, userstate) {
   client.say(channel,
-    `Thank you @${username} for the raid of ${viewers}!`
-  )
+    `thank you @${username} for the raid of ${viewers}!!!
+    Check them out at https://twitch.tv/${username}`)
+  client.say(channel,
+    `!so ${username}`)
 }
 
 function onSubscriptionHandler(channel, username, method, message, userstate) {
   client.say(channel,
-    `Thank you @${username} for subscribing!`
+    `thank you @${username} for subbiesssss!!!`
   )
 }
 
 function onCheerHandler(channel, userstate, message)  {
   client.say(channel,
-    `Thank you @${userstate.username} for the ${userstate.bits} bits!`
+    `thank you @${userstate.username} for the ${userstate.bits} bitties`
   )
 }
 
 function onGiftPaidUpgradeHandler(channel, username, sender, userstate) {
   client.say(channel,
-    `Thank you @${username} for continuing your gifted sub!`
+    `thank you @${username} for continuing your gifted sub!!!`
   )
 }
 
@@ -141,14 +217,14 @@ function reconnectHandler () {
 function resubHandler(channel, username, months, message, userstate, methods) {
   const cumulativeMonths = userstate['msg-param-cumulative-months']
   client.say(channel,
-    `Thank you @${username} for the ${cumulativeMonths} sub!`
+    `thank you @${username} for ${cumulativeMonths} eggs!`
   )
 }
 
 function subGiftHandler(channel, username, streakMonths, recipient, methods, userstate) {
 
   client.say(channel,
-    `Thank you @${username} for gifting a sub to ${recipient}}.`
+    `thank you @${username} for gifting a sub to ${recipient}!!.`
   )
 
   // this comes back as a boolean from twitch, disabling for now
@@ -162,7 +238,7 @@ function subGiftHandler(channel, username, streakMonths, recipient, methods, use
 // commands
 
 function hello (channel, userstate) {
-  client.say(channel, `@${userstate.username}, heya!`)
+  client.say(channel, `:egg: :lips: :egg: hi @${userstate.username}`)
 }
 
 function checkTwitchChat(userstate, message, channel) {

@@ -1,16 +1,24 @@
 {
   "name": "techno-boto-twitch",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A Twitch Moderator Bot",
   "main": "src",
   "scripts": {
     "start": "node .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Techno Tim",
+  "author": "Techno Tim, Elise Vu",
   "license": "ISC",
   "dependencies": {
     "esm": "^3.2.25",
     "tmi.js": "^1.5.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elisevu/techno-boto-twitch.git"
+  },
+  "bugs": {
+    "url": "https://github.com/elisevu/techno-boto-twitch/issues"
+  },
+  "homepage": "https://github.com/elisevu/techno-boto-twitch#readme"
 }
