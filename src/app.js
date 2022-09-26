@@ -1,23 +1,24 @@
-import tmi from 'tmi.js'
-import { BOT_USERNAME , OAUTH_TOKEN, CHANNEL_NAME, BLOCKED_WORDS } from './constants'
+import tmi from 'tmi.js';
+import fetch from 'cross-fetch';
+import { BOT_USERNAME, OAUTH_TOKEN, CHANNEL_NAME, CLIENT_ID, BLOCKED_WORDS, TOKEN } from './constants';
 
 var active = true
 var active_2 = true
 
 const options = {
-	options: { debug: true },
-	connection: {
+  options: { debug: true },
+  connection: {
     reconnect: true,
     secure: true,
     timeout: 180000,
     reconnectDecay: 1.4,
     reconnectInterval: 1000,
-	},
-	identity: {
-		username: BOT_USERNAME,
-		password: OAUTH_TOKEN
-	},
-	channels: [ CHANNEL_NAME ]
+  },
+  identity: {
+    username: BOT_USERNAME,
+    password: OAUTH_TOKEN
+  },
+  channels: [CHANNEL_NAME]
 }
 
 const client = new tmi.Client(options)
@@ -72,95 +73,97 @@ client.on('subgift', (channel, username, streakMonths, recipient, methods, users
 // event handlers
 
 client.on('message', (channel, userstate, message, self) => {
-  if(self) {
+  var badmessage = checkTwitchChat(userstate, message, channel)
+  if (self || badmessage) {
     return
   }
 
-  if (userstate.username === BOT_USERNAME || userstate.username === "nightbot" 
-  || userstate.username === "streamelements" || userstate.username === "songlistbot") {
+  if (userstate.username === BOT_USERNAME || userstate.username === "nightbot"
+    || userstate.username === "streamelements" || userstate.username === "songlistbot") {
     console.log(`Not checking bot's messages.`)
     return
   }
 
-	if(message.toLowerCase() === '!hello') {
+  if (message.startsWith('!so')) {
+    var array = message.split(" ");
+    console.log(array)
+    shoutout(channel, array[1])
+    return
+  }
+  if (message.toLowerCase() === '!hello') {
     hello(channel, userstate)
     return
   }
 
-  if(message.toLowerCase() === "!fleshegg") {
+  if (message.toLowerCase() === "!fleshegg") {
 
-    client.say(channel, "you called? my commands are !hello !socials !discord !models !lurk !nini !flesh");
+    client.say(channel, "you called? my commands are !hello !socials !discord !models !lurk !nini !flesh !comms");
   }
 
 
-  if(message.toLowerCase() === "!socials") {
+  if (message.toLowerCase() === "!socials") {
 
-      client.say(channel, "https://angriegg.carrd.co");
+    client.say(channel, "https://angriegg.carrd.co");
   }
 
-      
-  if(message.toLowerCase() === "!discord") {
 
-      client.say(channel, "come chill in the fridge https://discord.gg/JRJ94UVZvA");
+  if (message.toLowerCase() === "!discord") {
+
+    client.say(channel, "come chill in the fridge https://discord.gg/JRJ94UVZvA");
   }
 
-  if(message.toLowerCase() === "!models") {
+  if (message.toLowerCase() === "!models") {
 
-      client.say(channel, "pick eggus model from these! https://imgur.com/a/kiPHnIX");
+    client.say(channel, "pick eggus model from these! https://imgur.com/a/kiPHnIX");
   }
 
-  if(message.toLowerCase() === "!lurk") {
+  if (message.toLowerCase() === "!lurk") {
 
-      client.say(channel, "ty for lurky wurkies");
-  }
-      
-  if(message.toLowerCase() === "!nini") {
-      client.say(channel, "nini dont let the flesheggs bite!");
-  }
-     
-  if(message.toLowerCase() === "!raided") {
-      client.say(channel, `thank you @${userstate.username} for the raid of 10302132!!`)
-      client.say(channel, `!so ${userstate.username}`);
+    client.say(channel, "ty for lurky wurkies");
   }
 
-  if(message.toLowerCase() === "!flesh") {
-
-      client.say(channel, "im always watching");
+  if (message.toLowerCase() === "!nini") {
+    client.say(channel, "nini dont let the flesheggs bite!");
   }
-  
-  if(message.toLowerCase() === "!comms" || message.toLowerCase() === "!comm") {
 
-      client.say(channel, "fill eggus fridge by commissioning her -> https://angriegg.com")
+  if (message.toLowerCase() === "!flesh") {
+
+    client.say(channel, "im always watching");
+  }
+
+  if (message.toLowerCase() === "!comms" || message.toLowerCase() === "!comm") {
+
+    client.say(channel, "fill eggus fridge by commissioning her -> https://angriegg.com")
 
   }
-  
-  
-  else{
-    if(message.toLowerCase().startsWith("@") === false && message.toLowerCase().includes("ex") === true) {
-        if (active) {
-            client.say(channel, `don't you mean ${message.toLowerCase().replace(/ex/g, "EGGS")}? Kappa`)
-            active = false
-            setTimeout(() => {
-                active = true
-            }, 5000)
-        }
+
+
+  else {
+    if (message.toLowerCase().startsWith("@") === false && message.toLowerCase().includes("ex") === true) {
+      if (active) {
+        client.say(channel, `don't you mean ${message.toLowerCase().replace(/ex/g, "EGGS")}? Kappa`)
+        active = false
+        setTimeout(() => {
+          active = true
+        }, 5000)
+      }
     }
-    
-    if(message.toLowerCase().includes("eggs") === true) {
-        if (active_2) {
-            client.say(channel, ":egg: :egg: :egg:")
-            active_2 = false
-            setTimeout(() => {
-                active_2 = true
-            }, 5000)
-        }
+
+    if (message.toLowerCase().includes("eggs") === true) {
+      if (active_2) {
+        client.say(channel, ":egg: :egg: :egg:")
+        active_2 = false
+        setTimeout(() => {
+          active_2 = true
+        }, 5000)
+      }
     }
-}
+  }
 
   onMessageHandler(channel, userstate, message, self)
 })
 
-function onMessageHandler (channel, userstate, message, self) {
+function onMessageHandler(channel, userstate, message, self) {
   checkTwitchChat(userstate, message, channel)
 }
 
@@ -172,18 +175,18 @@ function onConnectedHandler(address, port) {
   console.log(`Connected: ${address}:${port}`)
 }
 
-function onHostedHandler (channel, username, viewers, autohost) {
+async function onHostedHandler(channel, username, viewers) {
+  const game = await isUser(username, channel)
   client.say(channel,
-    `thank you @${username} for the host of ${viewers}!!!`
-  )
+    `thank you @${username} for the host of ${viewers}!!! They were absolutely killing it at ${game}
+    pls perceive them at https://twitch.tv/${username}`);
 }
 
-function onRaidedHandler(channel, username, viewers, userstate) {
+async function onRaidedHandler(channel, username, viewers) {
+  const game = await isUser(username, channel)
   client.say(channel,
-    `thank you @${username} for the raid of ${viewers}!!!
-    Check them out at https://twitch.tv/${username}`)
-  client.say(channel,
-    `!so ${username}`)
+    `/announce thank you @${username} for the raid of ${viewers}!!! They were absolutely killing it at ${game}
+    pls perceive them at https://twitch.tv/${username}`);
 }
 
 function onSubscriptionHandler(channel, username, method, message, userstate) {
@@ -192,7 +195,7 @@ function onSubscriptionHandler(channel, username, method, message, userstate) {
   )
 }
 
-function onCheerHandler(channel, userstate, message)  {
+function onCheerHandler(channel, userstate, message) {
   client.say(channel,
     `thank you @${userstate.username} for the ${userstate.bits} bitties`
   )
@@ -210,7 +213,7 @@ function onHostingHandler(channel, target, viewers) {
   )
 }
 
-function reconnectHandler () {
+function reconnectHandler() {
   console.log('Reconnecting...')
 }
 
@@ -222,34 +225,91 @@ function resubHandler(channel, username, months, message, userstate, methods) {
 }
 
 function subGiftHandler(channel, username, streakMonths, recipient, methods, userstate) {
-
+  const senderCount =  ~userstate["msg-param-sender-count"];
   client.say(channel,
-    `thank you @${username} for gifting a sub to ${recipient}!!.`
+    `${username} has gifted ${senderCount} subs!`
   )
-
-  // this comes back as a boolean from twitch, disabling for now
-  // "msg-param-sender-count": false
-  // const senderCount =  ~~userstate["msg-param-sender-count"];
-  // client.say(channel,
-  //   `${username} has gifted ${senderCount} subs!`
-  // )
 }
+//-----------------------------------------------------------------------------------------------//
 
 // commands
 
-function hello (channel, userstate) {
+async function shoutout(channel, username) {
+  const game = await isUser(username, channel)
+  client.say(channel,
+    `/announce go support @${username} because theyre a beautiful little eggling!!! They were absolutely killing it at ${game} PogChamp PogChamp PogChamp!
+    pls perceive them at https://twitch.tv/${username}`)
+}
+
+function hello(channel, userstate) {
   client.say(channel, `:egg: :lips: :egg: hi @${userstate.username}`)
 }
+
+
+//==============================================================================================
 
 function checkTwitchChat(userstate, message, channel) {
   console.log(message)
   message = message.toLowerCase()
   let shouldSendMessage = false
+  let bannable = false
+  let timeout = false
+  bannable = BANNED_PHRASES.some(bannedPhrase => message.includes(bannedPhrase.toLowerCase()))
+  if (bannable) {
+    // ban
+    client.ban(channel, userstate.username, "You've been caught by fleshegg for saying nono words")
+    return bannable
+  }
+  timeout = TIMEOUT_WORDS.some(timeoutwords => message.includes(timeoutwords.toLowerCase()))
+  if (timeout) {
+    client.say(channel, `@${userstate.username}, stop it`)
+    // timeout
+    client.timeout(channel, userstate.username, "You've been caught by fleshegg for saying nono words")
+    return timeout
+  }
   shouldSendMessage = BLOCKED_WORDS.some(blockedWord => message.includes(blockedWord.toLowerCase()))
   if (shouldSendMessage) {
     // tell user
     client.say(channel, `@${userstate.username}, sorry!  You message was deleted.`)
     // delete message
     client.deletemessage(channel, userstate.id)
+    return shouldSendMessage
+  }
+  return false
+}
+
+async function isUser(userLookUp, channel) {
+  var url = `https://api.twitch.tv/helix/users?login=${userLookUp.toLowerCase().trim()}`;
+  try {
+    const response = await fetch(url,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${TOKEN}`,
+          "Client-Id": CLIENT_ID
+        }
+      }
+    );
+
+    if (response.status >= 400) {
+      throw new Error("Error fetching user")
+    }
+
+    const user = await response.json();
+    // console.log(user.data[0].id);
+    var url_broad = `https://api.twitch.tv/helix/channels?broadcaster_id=${user.data[0].id}`
+    const broadcast = await fetch(url_broad,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${TOKEN}`,
+          "Client-Id": CLIENT_ID
+        }
+      });
+    const game = await broadcast.json();
+    // console.log(game.data[0].game_name)
+    return game.data[0].game_name
+  } catch (err) {
+    console.error(err);
   }
 }
